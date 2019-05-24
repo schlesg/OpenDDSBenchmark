@@ -1,0 +1,34 @@
+TAO (3001|140638164367168) - Default_Resource_Factory - codeset manager=0x1b41190
+TAO (3001|140638164367168) - Loaded default protocol <IIOP_Factory>
+TAO (3001|140638164367168) - IIOP_Connection_Handler::open, IIOP connection to peer <192.168.1.107:42011> on [9]
+TAO (3001|140638164367168) - IIOP_Connection_Handler::open, IIOP connection to peer <192.168.1.107:58411> on [10]
+(3001|140638164367168) WARNING: Could not find FQDN. Using "127.0.0.1" as fully qualified hostname, please correct system configuration.
+TAO (3001|140638164367168) - IIOP_Connection_Handler::process_listen_point_list, Listening port [41593] on [192.168.1.107]
+TAO (3001|140638164367168) - IIOP_Connection_Handler::process_listen_point_list, Listening port [39263] on [192.168.1.107]
+TAO (3001|140638164367168) - Transport[9]::handle_input_parse_data, notify reactor
+TAO (3001|140638164367168) - Transport[9]::notify_reactor, notify to Reactor
+TAO (3001|140638164367168) - Transport[10]::handle_input_parse_data, notify reactor
+TAO (3001|140638164367168) - Transport[10]::notify_reactor, notify to Reactor
+TAO (3001|140638164367168) - Transport[9]::handle_input_parse_data, notify reactor
+TAO (3001|140638164367168) - Transport[9]::notify_reactor, notify to Reactor
+TAO (3001|140638164367168) - Transport[10]::handle_input_parse_data, notify reactor
+TAO (3001|140638164367168) - Transport[10]::notify_reactor, notify to Reactor
+TAO (3001|140638164367168) - Transport[9]::handle_input_parse_data, notify reactor
+TAO (3001|140638164367168) - Transport[9]::notify_reactor, notify to Reactor
+TAO (3001|140638164367168) - Transport[10]::handle_input_parse_data, notify reactor
+TAO (3001|140638164367168) - Transport[10]::notify_reactor, notify to Reactor
+TAO (3001|140638164367168) - Transport[9]::handle_input_parse_data, notify reactor
+TAO (3001|140638164367168) - Transport[9]::notify_reactor, notify to Reactor
+TAO (3001|140638164367168) - Transport[10]::handle_input_parse_data, notify reactor
+TAO (3001|140638164367168) - Transport[10]::notify_reactor, notify to Reactor
+TAO (3001|140638164367168) - Transport[10]::handle_input, error parsing incoming message
+TAO (3001|140638164367168) - Connection_Handler[10]::close_connection_eh, purging entry from cache
+TAO (3001|140638164367168) - Connection_Handler[10]::close_connection_eh, removing from the reactor
+TAO (3001|140638164367168) - Connection_Handler[10]::close_connection_eh, cancel all timers
+TAO (3001|140638164367168) - Connection_Handler[10]::close_connection_eh end
+TAO (3001|140638164367168) - Transport[9]::handle_input, error parsing incoming message
+TAO (3001|140638164367168) - Connection_Handler[9]::close_connection_eh, purging entry from cache
+TAO (3001|140638164367168) - Connection_Handler[9]::close_connection_eh, removing from the reactor
+TAO (3001|140638164367168) - Connection_Handler[9]::close_connection_eh, cancel all timers
+TAO (3001|140638164367168) - Connection_Handler[9]::close_connection_eh end
+InfoRepo_Shutdown: shutting down on signal 15
