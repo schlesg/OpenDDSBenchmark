@@ -5,7 +5,14 @@
 project(OpenDDS_Messenger1_cmake CXX)
 cmake_minimum_required(VERSION 3.8.2)
 
+# set(CMAKE_CXX_STANDARD 11) //Not supported
+SET(GCC_COVERAGE_LINK_FLAGS    "-lboost_ program_options -lboost_timer -lboost_chrono -lrt")
+
 find_package(OpenDDS)
+find_package(Boost REQUIRED)
+FIND_PACKAGE(Boost COMPONENTS program_options REQUIRED)
+find_package(Boost REQUIRED filesystem program_options timer chrono)
+INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIRS})
 
 set(src "${CMAKE_CURRENT_SOURCE_DIR}")
 set(dst ${CMAKE_CURRENT_BINARY_DIR})
@@ -16,8 +23,6 @@ add_executable(publisher
     ${src}/publisher.cpp
 )
 OPENDDS_TARGET_SOURCES(publisher
-    ${src}/DataReaderListener.cpp
-    ${src}/DataReaderListener.h
     ${src}/Messenger.idl
 )
 
@@ -32,7 +37,7 @@ OPENDDS_TARGET_SOURCES(subscriber
 )
 
 foreach(t ${all_targets})
-  target_link_libraries(${t} OpenDDS::OpenDDS)
+  target_link_libraries(${t} OpenDDS::OpenDDS ${Boost_PROGRAM_OPTIONS_LIBRARY} ${Boost_DATE_TIME_LIBRARY} ${Boost_LIBRARIES})
 endforeach()
 
 # Copy configs/scripts into build-output directory

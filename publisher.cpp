@@ -16,11 +16,18 @@
 
 #include <dds/DCPS/SubscriberImpl.h>
 #include <dds/DCPS/WaitSet.h>
-#include "DataReaderListener.h"
+//#include "DataReaderListener.h"
 #include <dds/DCPS/SubscriberImpl.h>
 
 #include "dds/DCPS/StaticIncludes.h"
 #include <iostream>
+#include "string"
+//#include <chrono>
+
+#include <boost/format.hpp>
+#include <boost/date_time/posix_time/posix_time.hpp>
+#include <boost/chrono.hpp>
+
 #ifdef ACE_AS_STATIC_LIBS
 #ifndef OPENDDS_SAFETY_PROFILE
 #include <dds/DCPS/transport/udp/Udp.h>
@@ -51,6 +58,8 @@ const char DDSSEC_PROP_PERM_CA[] = "dds.sec.access.permissions_ca";
 const char DDSSEC_PROP_PERM_GOV_DOC[] = "dds.sec.access.governance";
 const char DDSSEC_PROP_PERM_DOC[] = "dds.sec.access.permissions";
 #endif
+using namespace std;
+//using namespace std::chrono;
 
 bool reliable = false;
 bool wait_for_acks = false;
@@ -163,12 +172,7 @@ int ACE_TMAIN(int argc, ACE_TCHAR *argv[])
 
       DDS::DataWriterQos qos;
       pub->get_default_datawriter_qos(qos);
-      if (dw_reliable())
-      {
-        std::cout << "Reliable DataWriter" << std::endl;
-        qos.history.kind = DDS::KEEP_ALL_HISTORY_QOS;
-        qos.reliability.kind = DDS::RELIABLE_RELIABILITY_QOS;
-      }
+      qos.reliability.kind = DDS::BEST_EFFORT_RELIABILITY_QOS;
 
       // Create DataWriter
       DDS::DataWriter_var dw =
@@ -228,21 +232,17 @@ int ACE_TMAIN(int argc, ACE_TCHAR *argv[])
       }
 
       // Create DataReader
-      DataReaderListenerImpl *const listener_servant = new DataReaderListenerImpl;
-      DDS::DataReaderListener_var listener(listener_servant);
+      //DataReaderListenerImpl *const listener_servant = new DataReaderListenerImpl;
+      //DDS::DataReaderListener_var listener(listener_servant);
 
       DDS::DataReaderQos dr_qos;
       sub->get_default_datareader_qos(dr_qos);
-      if (DataReaderListenerImpl::is_reliable())
-      {
-        std::cout << "Reliable DataReader" << std::endl;
-        dr_qos.reliability.kind = DDS::RELIABLE_RELIABILITY_QOS;
-      }
+      dr_qos.reliability.kind = DDS::BEST_EFFORT_RELIABILITY_QOS;
 
       DDS::DataReader_var reader =
           sub->create_datareader(pongTopic.in(),
                                  dr_qos,
-                                 listener.in(),
+                                 DDS::DataReaderListener::_nil(),
                                  OpenDDS::DCPS::DEFAULT_STATUS_MASK);
 
       if (CORBA::is_nil(reader.in()))
@@ -253,28 +253,44 @@ int ACE_TMAIN(int argc, ACE_TCHAR *argv[])
                          -1);
       }
 
+      Messenger::MessageDataReader_var message_dr =
+          Messenger::MessageDataReader::_narrow(reader);
+
+      if (CORBA::is_nil(message_dr.in()))
+      {
+        ACE_ERROR((LM_ERROR,
+                   ACE_TEXT("%N:%l: on_data_available()")
+                       ACE_TEXT(" ERROR: _narrow failed!\n")));
+        ACE_OS::exit(-1);
+      }
+
+      Messenger::Message receivedMessage;
+      DDS::SampleInfo si;
+      cout << "sleeping for 3 sec before starting logic" << endl;
+      sleep(1);
+
       //Main flow
       Messenger::Message message;
       message.subject_id = 99;
 
       DDS::InstanceHandle_t handle = message_dw->register_instance(message);
-
-      message.from = "Comic Book Guy";
-      message.subject = "Review";
-      message.text = "Worst. Movie. Ever.";
+      DDS::ReturnCode_t status;
+      message.from = "Initiator";
+      message.subject = "";
+      std::string s(100, '*');
+      message.text = s.c_str();
       message.count = 0;
 
-      const int num_messages = 40; //TBD by Config
+      const int num_messages = 1000; //TBD by Config
+      boost::chrono::high_resolution_clock::time_point start = boost::chrono::high_resolution_clock::now();
+      //boost::posix_time::ptime start = boost::posix_time::second_clock::local_time();
 
       for (int i = 0; i < num_messages; i++)
       {
         DDS::ReturnCode_t error;
-        do
-        {
-          std::cout << "Writing..." << std::endl;
-          error = message_dw->write(message, handle);
-          sleep(1);
-        } while (error == DDS::RETCODE_TIMEOUT);
+
+        //std::cout << "Writing #" << message.count << std::endl;
+        error = message_dw->write(message, handle);
 
         if (error != DDS::RETCODE_OK)
         {
@@ -282,10 +298,33 @@ int ACE_TMAIN(int argc, ACE_TCHAR *argv[])
                      ACE_TEXT("%N:%l: svc()")
                          ACE_TEXT(" ERROR: write returned %d!\n"),
                      error));
+          return 1;
         }
+        int numSubscribers = 1; //TBD by config
+        for (size_t jj = 0; jj < numSubscribers; ++jj)
+        {
+          // Wait for echoed message from each subscriber
 
+          do
+          {
+            status = message_dr->take_next_sample(receivedMessage, si);
+          } while (status == DDS::RETCODE_NO_DATA);
+          //std::cout << receivedMessage.count << std::endl;
+          // if (message.size() != Config::payloadSize)
+          // {
+          //   std::cout << "Message of incorrect size received: " << msg.size()
+          //             << std::endl;
+          //   return -1;
+          // }
+        }
         message.count++;
+
+        //sleep(1);
       }
+
+      boost::chrono::high_resolution_clock::time_point end = boost::chrono::high_resolution_clock::now();
+      boost::chrono::microseconds diff = boost::chrono::duration_cast<boost::chrono::microseconds>(end - start);
+      cout << "Average latency = " << diff.count() / num_messages << " microseconds with roundtrip count of " << num_messages << endl;
 
       std::cout << "Writer finished " << std::endl;
       //writer->end();

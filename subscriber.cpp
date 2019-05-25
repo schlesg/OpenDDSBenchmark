@@ -157,12 +157,7 @@ int ACE_TMAIN(int argc, ACE_TCHAR *argv[])
 
     DDS::DataWriterQos qos;
     pub->get_default_datawriter_qos(qos);
-    if (dw_reliable())
-    {
-      std::cout << "Reliable DataWriter" << std::endl;
-      qos.history.kind = DDS::KEEP_ALL_HISTORY_QOS;
-      qos.reliability.kind = DDS::RELIABLE_RELIABILITY_QOS;
-    }
+    qos.reliability.kind = DDS::BEST_EFFORT_RELIABILITY_QOS;
 
     // Create DataWriter
     DDS::DataWriter_var dw =
@@ -226,11 +221,7 @@ int ACE_TMAIN(int argc, ACE_TCHAR *argv[])
 
     DDS::DataReaderQos dr_qos;
     sub->get_default_datareader_qos(dr_qos);
-    if (DataReaderListenerImpl::is_reliable())
-    {
-      std::cout << "Reliable DataReader" << std::endl;
-      dr_qos.reliability.kind = DDS::RELIABLE_RELIABILITY_QOS;
-    }
+    dr_qos.reliability.kind = DDS::BEST_EFFORT_RELIABILITY_QOS;
 
     DDS::DataReader_var reader =
         sub->create_datareader(topic.in(),
@@ -246,9 +237,20 @@ int ACE_TMAIN(int argc, ACE_TCHAR *argv[])
                        -1);
     }
 
+    Messenger::MessageDataReader_var message_dr =
+        Messenger::MessageDataReader::_narrow(reader);
+
+    if (CORBA::is_nil(message_dr.in()))
+    {
+      ACE_ERROR((LM_ERROR,
+                 ACE_TEXT("%N:%l: on_data_available()")
+                     ACE_TEXT(" ERROR: _narrow failed!\n")));
+      ACE_OS::exit(-1);
+    }
+
     while (true)
     {
-      sleep(1);
+      //sleep(1);
     }
 
     //status = listener_servant->is_valid() ? 0 : -1;
