@@ -5,7 +5,6 @@
  * See: http://www.opendds.org/license.html
  */
 
-
 #include <dds/DdsDcpsInfrastructureC.h>
 #include <dds/DCPS/Marked_Default_Qos.h>
 #include <dds/DCPS/Service_Participant.h>
@@ -14,18 +13,20 @@
 
 #include "dds/DCPS/StaticIncludes.h"
 #ifdef ACE_AS_STATIC_LIBS
-# ifndef OPENDDS_SAFETY_PROFILE
+#ifndef OPENDDS_SAFETY_PROFILE
 #include <dds/DCPS/transport/udp/Udp.h>
 #include <dds/DCPS/transport/multicast/Multicast.h>
 #include <dds/DCPS/RTPS/RtpsDiscovery.h>
 #include <dds/DCPS/transport/shmem/Shmem.h>
-# endif
+#endif
 #include <dds/DCPS/transport/rtps_udp/RtpsUdp.h>
 #endif
 
 #include <dds/DCPS/transport/framework/TransportRegistry.h>
 #include <dds/DCPS/transport/framework/TransportConfig.h>
 #include <dds/DCPS/transport/framework/TransportInst.h>
+
+#include <dds/DCPS/PublisherImpl.h>
 
 #include "DataReaderListener.h"
 #include "MessengerTypeSupportImpl.h"
@@ -50,7 +51,13 @@ const char DDSSEC_PROP_PERM_DOC[] = "dds.sec.access.permissions";
 bool reliable = false;
 bool wait_for_acks = false;
 
-void append(DDS::PropertySeq& props, const char* name, const char* value)
+bool dw_reliable()
+{
+  OpenDDS::DCPS::TransportConfig_rch gc = TheTransportRegistry->global_config();
+  return !(gc->instances_[0]->transport_type_ == "udp");
+}
+
+void append(DDS::PropertySeq &props, const char *name, const char *value)
 {
   const DDS::Property_t prop = {name, value, false /*propagate*/};
   const unsigned int len = props.length();
@@ -58,17 +65,18 @@ void append(DDS::PropertySeq& props, const char* name, const char* value)
   props[len] = prop;
 }
 
-int
-ACE_TMAIN(int argc, ACE_TCHAR *argv[])
+int ACE_TMAIN(int argc, ACE_TCHAR *argv[])
 {
   int status = 0;
-  try {
+  try
+  {
     // Initialize DomainParticipantFactory
     DDS::DomainParticipantFactory_var dpf =
-      TheParticipantFactoryWithArgs(argc, argv);
+        TheParticipantFactoryWithArgs(argc, argv);
 
     int error;
-    if ((error = parse_args(argc, argv)) != 0) {
+    if ((error = parse_args(argc, argv)) != 0)
+    {
       return error;
     }
 
@@ -76,8 +84,9 @@ ACE_TMAIN(int argc, ACE_TCHAR *argv[])
     dpf->get_default_participant_qos(part_qos);
 
 #if defined(OPENDDS_SECURITY)
-    if (TheServiceParticipant->get_security()) {
-      DDS::PropertySeq& props = part_qos.property.value;
+    if (TheServiceParticipant->get_security())
+    {
+      DDS::PropertySeq &props = part_qos.property.value;
       append(props, DDSSEC_PROP_IDENTITY_CA, auth_ca_file);
       append(props, DDSSEC_PROP_IDENTITY_CERT, id_cert_file);
       append(props, DDSSEC_PROP_IDENTITY_PRIVKEY, id_key_file);
@@ -89,116 +98,170 @@ ACE_TMAIN(int argc, ACE_TCHAR *argv[])
 
     // Create DomainParticipant
     DDS::DomainParticipant_var participant =
-      dpf->create_participant(4,
-                              part_qos,
-                              DDS::DomainParticipantListener::_nil(),
-                              OpenDDS::DCPS::DEFAULT_STATUS_MASK);
+        dpf->create_participant(4,
+                                part_qos,
+                                DDS::DomainParticipantListener::_nil(),
+                                OpenDDS::DCPS::DEFAULT_STATUS_MASK);
 
-    if (CORBA::is_nil(participant.in())) {
+    if (CORBA::is_nil(participant.in()))
+    {
       ACE_ERROR_RETURN((LM_ERROR,
                         ACE_TEXT("%N:%l main()")
-                        ACE_TEXT(" ERROR: create_participant() failed!\n")), -1);
+                            ACE_TEXT(" ERROR: create_participant() failed!\n")),
+                       -1);
     }
 
     // Register Type (Messenger::Message)
     Messenger::MessageTypeSupport_var ts =
-      new Messenger::MessageTypeSupportImpl();
+        new Messenger::MessageTypeSupportImpl();
 
-    if (ts->register_type(participant.in(), "") != DDS::RETCODE_OK) {
+    if (ts->register_type(participant.in(), "") != DDS::RETCODE_OK)
+    {
       ACE_ERROR_RETURN((LM_ERROR,
                         ACE_TEXT("%N:%l main()")
-                        ACE_TEXT(" ERROR: register_type() failed!\n")), -1);
+                            ACE_TEXT(" ERROR: register_type() failed!\n")),
+                       -1);
     }
 
-    // Create Topic (Movie Discussion List)
+    //Create Publishing side (Pong)
+    // Create Topic
     CORBA::String_var type_name = ts->get_type_name();
-    DDS::Topic_var topic =
-      participant->create_topic("Movie Discussion List",
-                                type_name.in(),
-                                TOPIC_QOS_DEFAULT,
-                                DDS::TopicListener::_nil(),
-                                OpenDDS::DCPS::DEFAULT_STATUS_MASK);
+    DDS::Topic_var pongTopic =
+        participant->create_topic("Pong",
+                                  type_name.in(),
+                                  TOPIC_QOS_DEFAULT,
+                                  DDS::TopicListener::_nil(),
+                                  OpenDDS::DCPS::DEFAULT_STATUS_MASK);
 
-    if (CORBA::is_nil(topic.in())) {
+    if (CORBA::is_nil(pongTopic.in()))
+    {
+      ACE_ERROR_RETURN((LM_ERROR,
+                        ACE_TEXT("%N:%l: main()")
+                            ACE_TEXT(" ERROR: create_topic failed!\n")),
+                       -1);
+    }
+
+    // Create Publisher
+    DDS::Publisher_var pub =
+        participant->create_publisher(PUBLISHER_QOS_DEFAULT,
+                                      DDS::PublisherListener::_nil(),
+                                      OpenDDS::DCPS::DEFAULT_STATUS_MASK);
+
+    if (CORBA::is_nil(pub.in()))
+    {
+      ACE_ERROR_RETURN((LM_ERROR,
+                        ACE_TEXT("%N:%l: main()")
+                            ACE_TEXT(" ERROR: create_publisher failed!\n")),
+                       -1);
+    }
+
+    DDS::DataWriterQos qos;
+    pub->get_default_datawriter_qos(qos);
+    if (dw_reliable())
+    {
+      std::cout << "Reliable DataWriter" << std::endl;
+      qos.history.kind = DDS::KEEP_ALL_HISTORY_QOS;
+      qos.reliability.kind = DDS::RELIABLE_RELIABILITY_QOS;
+    }
+
+    // Create DataWriter
+    DDS::DataWriter_var dw =
+        pub->create_datawriter(pongTopic.in(),
+                               qos,
+                               DDS::DataWriterListener::_nil(),
+                               OpenDDS::DCPS::DEFAULT_STATUS_MASK);
+
+    if (CORBA::is_nil(dw.in()))
+    {
+      ACE_ERROR_RETURN((LM_ERROR,
+                        ACE_TEXT("%N:%l: main()")
+                            ACE_TEXT(" ERROR: create_datawriter failed!\n")),
+                       -1);
+    }
+
+    Messenger::MessageDataWriter_var message_dw = Messenger::MessageDataWriter::_narrow(dw.in());
+
+    if (CORBA::is_nil(message_dw.in()))
+    {
+      ACE_ERROR((LM_ERROR,
+                 ACE_TEXT("%N:%l: svc()")
+                     ACE_TEXT(" ERROR: _narrow failed!\n")));
+      ACE_OS::exit(-1);
+    }
+
+    //Create Subscribing side (ping)
+    // Create Topic
+    DDS::Topic_var topic =
+        participant->create_topic("Ping",
+                                  type_name.in(),
+                                  TOPIC_QOS_DEFAULT,
+                                  DDS::TopicListener::_nil(),
+                                  OpenDDS::DCPS::DEFAULT_STATUS_MASK);
+
+    if (CORBA::is_nil(topic.in()))
+    {
       ACE_ERROR_RETURN((LM_ERROR,
                         ACE_TEXT("%N:%l main()")
-                        ACE_TEXT(" ERROR: create_topic() failed!\n")), -1);
+                            ACE_TEXT(" ERROR: create_topic() failed!\n")),
+                       -1);
     }
 
     // Create Subscriber
     DDS::Subscriber_var sub =
-      participant->create_subscriber(SUBSCRIBER_QOS_DEFAULT,
-                                     DDS::SubscriberListener::_nil(),
-                                     OpenDDS::DCPS::DEFAULT_STATUS_MASK);
+        participant->create_subscriber(SUBSCRIBER_QOS_DEFAULT,
+                                       DDS::SubscriberListener::_nil(),
+                                       OpenDDS::DCPS::DEFAULT_STATUS_MASK);
 
-    if (CORBA::is_nil(sub.in())) {
+    if (CORBA::is_nil(sub.in()))
+    {
       ACE_ERROR_RETURN((LM_ERROR,
                         ACE_TEXT("%N:%l main()")
-                        ACE_TEXT(" ERROR: create_subscriber() failed!\n")), -1);
+                            ACE_TEXT(" ERROR: create_subscriber() failed!\n")),
+                       -1);
     }
 
     // Create DataReader
-    DataReaderListenerImpl* const listener_servant = new DataReaderListenerImpl;
+    DataReaderListenerImpl *const listener_servant = new DataReaderListenerImpl(&message_dw);
     DDS::DataReaderListener_var listener(listener_servant);
 
     DDS::DataReaderQos dr_qos;
     sub->get_default_datareader_qos(dr_qos);
-    if (DataReaderListenerImpl::is_reliable()) {
+    if (DataReaderListenerImpl::is_reliable())
+    {
       std::cout << "Reliable DataReader" << std::endl;
       dr_qos.reliability.kind = DDS::RELIABLE_RELIABILITY_QOS;
     }
 
     DDS::DataReader_var reader =
-      sub->create_datareader(topic.in(),
-                             dr_qos,
-                             listener.in(),
-                             OpenDDS::DCPS::DEFAULT_STATUS_MASK);
+        sub->create_datareader(topic.in(),
+                               dr_qos,
+                               listener.in(),
+                               OpenDDS::DCPS::DEFAULT_STATUS_MASK);
 
-    if (CORBA::is_nil(reader.in())) {
+    if (CORBA::is_nil(reader.in()))
+    {
       ACE_ERROR_RETURN((LM_ERROR,
                         ACE_TEXT("%N:%l main()")
-                        ACE_TEXT(" ERROR: create_datareader() failed!\n")), -1);
+                            ACE_TEXT(" ERROR: create_datareader() failed!\n")),
+                       -1);
     }
 
-    // Block until Publisher completes
-    DDS::StatusCondition_var condition = reader->get_statuscondition();
-    condition->set_enabled_statuses(DDS::SUBSCRIPTION_MATCHED_STATUS);
-
-    DDS::WaitSet_var ws = new DDS::WaitSet;
-    ws->attach_condition(condition);
-
-    DDS::Duration_t timeout =
-      { DDS::DURATION_INFINITE_SEC, DDS::DURATION_INFINITE_NSEC };
-
-    DDS::ConditionSeq conditions;
-    DDS::SubscriptionMatchedStatus matches = { 0, 0, 0, 0, 0 };
-
-    while (true) {
-      if (reader->get_subscription_matched_status(matches) != DDS::RETCODE_OK) {
-        ACE_ERROR_RETURN((LM_ERROR,
-                          ACE_TEXT("%N:%l main()")
-                          ACE_TEXT(" ERROR: get_subscription_matched_status() failed!\n")), -1);
-      }
-      if (matches.current_count == 0 && matches.total_count > 0) {
-        break;
-      }
-      if (ws->wait(conditions, timeout) != DDS::RETCODE_OK) {
-        ACE_ERROR_RETURN((LM_ERROR,
-                          ACE_TEXT("%N:%l main()")
-                          ACE_TEXT(" ERROR: wait() failed!\n")), -1);
-      }
+    while (true)
+    {
+      sleep(1);
     }
 
-    status = listener_servant->is_valid() ? 0 : -1;
+    //status = listener_servant->is_valid() ? 0 : -1;
 
-    ws->detach_condition(condition);
+    //ws->detach_condition(condition);
 
     // Clean-up!
     participant->delete_contained_entities();
     dpf->delete_participant(participant.in());
     TheServiceParticipant->shutdown();
-
-  } catch (const CORBA::Exception& e) {
+  }
+  catch (const CORBA::Exception &e)
+  {
     e._tao_print_exception("Exception caught in main():");
     status = -1;
   }

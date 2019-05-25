@@ -14,6 +14,11 @@
 #include <dds/DCPS/PublisherImpl.h>
 #include <dds/DCPS/Service_Participant.h>
 
+#include <dds/DCPS/SubscriberImpl.h>
+#include <dds/DCPS/WaitSet.h>
+#include "DataReaderListener.h"
+#include <dds/DCPS/SubscriberImpl.h>
+
 #include "dds/DCPS/StaticIncludes.h"
 #include <iostream>
 #ifdef ACE_AS_STATIC_LIBS
@@ -27,6 +32,7 @@
 #endif
 
 #include "MessengerTypeSupportImpl.h"
+
 //#include "Writer.h"
 #include "Args.h"
 
@@ -45,6 +51,9 @@ const char DDSSEC_PROP_PERM_CA[] = "dds.sec.access.permissions_ca";
 const char DDSSEC_PROP_PERM_GOV_DOC[] = "dds.sec.access.governance";
 const char DDSSEC_PROP_PERM_DOC[] = "dds.sec.access.permissions";
 #endif
+
+bool reliable = false;
+bool wait_for_acks = false;
 
 bool dw_reliable()
 {
@@ -75,7 +84,7 @@ int ACE_TMAIN(int argc, ACE_TCHAR *argv[])
 
       std::cout << "Starting publisher with " << argc << " args" << std::endl;
       int error;
-      if ((error = parse_args(argc, argv)) != 0)
+      if ((error = parse_args(argc, argv)) != 0) //TBD
       {
         return error;
       }
@@ -124,7 +133,7 @@ int ACE_TMAIN(int argc, ACE_TCHAR *argv[])
       // Create Topic
       CORBA::String_var type_name = mts->get_type_name();
       DDS::Topic_var topic =
-          participant->create_topic("Movie Discussion List",
+          participant->create_topic("Ping",
                                     type_name.in(),
                                     TOPIC_QOS_DEFAULT,
                                     DDS::TopicListener::_nil(),
@@ -176,12 +185,6 @@ int ACE_TMAIN(int argc, ACE_TCHAR *argv[])
                          -1);
       }
 
-      // // Start writing threads
-      // std::cout << "Creating Writer" << std::endl;
-      // Writer* writer = new Writer(dw.in());
-      // std::cout << "Starting Writer" << std::endl;
-      // writer->start();
-      // Write samples
       Messenger::MessageDataWriter_var message_dw = Messenger::MessageDataWriter::_narrow(dw.in());
 
       if (CORBA::is_nil(message_dw.in()))
@@ -192,6 +195,65 @@ int ACE_TMAIN(int argc, ACE_TCHAR *argv[])
         ACE_OS::exit(-1);
       }
 
+      //Creating subscriber side (pong)
+
+      // Create Topic
+      DDS::Topic_var pongTopic =
+          participant->create_topic("Pong",
+                                    type_name.in(),
+                                    TOPIC_QOS_DEFAULT,
+                                    DDS::TopicListener::_nil(),
+                                    OpenDDS::DCPS::DEFAULT_STATUS_MASK);
+
+      if (CORBA::is_nil(pongTopic.in()))
+      {
+        ACE_ERROR_RETURN((LM_ERROR,
+                          ACE_TEXT("%N:%l main()")
+                              ACE_TEXT(" ERROR: create_topic() failed!\n")),
+                         -1);
+      }
+
+      // Create Subscriber
+      DDS::Subscriber_var sub =
+          participant->create_subscriber(SUBSCRIBER_QOS_DEFAULT,
+                                         DDS::SubscriberListener::_nil(),
+                                         OpenDDS::DCPS::DEFAULT_STATUS_MASK);
+
+      if (CORBA::is_nil(sub.in()))
+      {
+        ACE_ERROR_RETURN((LM_ERROR,
+                          ACE_TEXT("%N:%l main()")
+                              ACE_TEXT(" ERROR: create_subscriber() failed!\n")),
+                         -1);
+      }
+
+      // Create DataReader
+      DataReaderListenerImpl *const listener_servant = new DataReaderListenerImpl;
+      DDS::DataReaderListener_var listener(listener_servant);
+
+      DDS::DataReaderQos dr_qos;
+      sub->get_default_datareader_qos(dr_qos);
+      if (DataReaderListenerImpl::is_reliable())
+      {
+        std::cout << "Reliable DataReader" << std::endl;
+        dr_qos.reliability.kind = DDS::RELIABLE_RELIABILITY_QOS;
+      }
+
+      DDS::DataReader_var reader =
+          sub->create_datareader(pongTopic.in(),
+                                 dr_qos,
+                                 listener.in(),
+                                 OpenDDS::DCPS::DEFAULT_STATUS_MASK);
+
+      if (CORBA::is_nil(reader.in()))
+      {
+        ACE_ERROR_RETURN((LM_ERROR,
+                          ACE_TEXT("%N:%l main()")
+                              ACE_TEXT(" ERROR: create_datareader() failed!\n")),
+                         -1);
+      }
+
+      //Main flow
       Messenger::Message message;
       message.subject_id = 99;
 

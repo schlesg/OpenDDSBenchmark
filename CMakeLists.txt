@@ -16,8 +16,8 @@ add_executable(publisher
     ${src}/publisher.cpp
 )
 OPENDDS_TARGET_SOURCES(publisher
-    ${src}/Writer.cpp
-    ${src}/Writer.h
+    ${src}/DataReaderListener.cpp
+    ${src}/DataReaderListener.h
     ${src}/Messenger.idl
 )
 

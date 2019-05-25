@@ -18,6 +18,13 @@
 
 #include <iostream>
 
+DataReaderListenerImpl::DataReaderListenerImpl(Messenger::MessageDataWriter_var *dataWriter)
+    : num_reads_(0), valid_(true), reliable_(is_reliable())
+{
+  m_dataWriter = dataWriter;
+  std::cout << "Transport is " << (reliable_ ? "" : "UN-") << "RELIABLE" << std::endl;
+}
+
 DataReaderListenerImpl::DataReaderListenerImpl()
     : num_reads_(0), valid_(true), reliable_(is_reliable())
 {
@@ -75,6 +82,28 @@ void DataReaderListenerImpl::on_data_available(DDS::DataReader_ptr reader)
                   << "         count      = " << message.count << std::endl
                   << "         text       = " << message.text.in() << std::endl;
 
+        Messenger::Message message;
+        message.subject_id = 99;
+
+        DDS::InstanceHandle_t handle = (*m_dataWriter)->register_instance(message);
+
+        message.from = "Comic Book Guy";
+        message.subject = "Review";
+        message.text = "Worst. Movie. Ever.";
+        message.count = 0;
+
+        DDS::ReturnCode_t error;
+        std::cout << "Writing..." << std::endl;
+        error = (*m_dataWriter)->write(message, handle);
+        sleep(1);
+
+        if (error != DDS::RETCODE_OK)
+        {
+          ACE_ERROR((LM_ERROR,
+                     ACE_TEXT("%N:%l: svc()")
+                         ACE_TEXT(" ERROR: write returned %d!\n"),
+                     error));
+        }
       }
       // Non-Valid sample
       else if (si.instance_state == DDS::NOT_ALIVE_DISPOSED_INSTANCE_STATE)
