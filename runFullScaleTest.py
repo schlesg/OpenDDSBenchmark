@@ -1,8 +1,8 @@
 import subprocess
 import os
 
-print(os.getcwd())
-os.chdir("build/")
+# print(os.getcwd())
+# os.chdir("build/")
 commandList = []
 commandList.append("./initiator --SubTopic dummy --PubTopic MS1 --msgLength 5000 --roundtripCount 0 --pubName Dummy --updateRate 100") #C1
 commandList.append("./initiator --SubTopic dummy --PubTopic MS1 --msgLength 5000 --roundtripCount 0 --pubName Dummy --updateRate 100") #C2
@@ -17,7 +17,7 @@ commandList.append("./echoer --SubTopic C5 --PubTopic dummy ") #GW3
 # commandList.append("./initiator --SubTopic C5 --PubTopic MS1 --msgLength 5000 --roundtripCount 1000") #C5
 
 for command in commandList:
-    subprocess.Popen(command.split())
+    subprocess.Popen(command.split(), cwd="build/")
 
 
 input("Press Enter to shutdown...\n")
