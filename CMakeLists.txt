@@ -16,21 +16,21 @@ INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIRS})
 
 set(src "${CMAKE_CURRENT_SOURCE_DIR}")
 set(dst ${CMAKE_CURRENT_BINARY_DIR})
-set(all_targets publisher subscriber)
+set(all_targets initiator echoer)
 
-# Publisher
-add_executable(publisher
+# Initiator
+add_executable(initiator
     ${src}/publisher.cpp
 )
-OPENDDS_TARGET_SOURCES(publisher
+OPENDDS_TARGET_SOURCES(initiator
     ${src}/Messenger.idl
 )
 
-# Subscriber
-add_executable(subscriber
+# Echoer
+add_executable(echoer
     ${src}/subscriber.cpp
 )
-OPENDDS_TARGET_SOURCES(subscriber
+OPENDDS_TARGET_SOURCES(echoer
     ${src}/DataReaderListener.cpp
     ${src}/DataReaderListener.h
     ${src}/Messenger.idl

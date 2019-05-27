@@ -81,7 +81,7 @@ int main(int argc, ACE_TCHAR *argv[])
 #pragma region Init
   DDS::ReturnCode_t retcode;
   po::options_description description("Options");
-  description.add_options()("help", "produce help message. Execution example - ./DDSInitiator --PubTopic pingTopic --SubTopic pongTopic -msgLength 1000")("TransportConfig", po::value(&Config::transportConfig)->default_value("rtps_disc.ini"), "TransportConfig e.g. rtps_disc.ini, shmem.ini. Note that SHMEM requires running the DCPSInfoRepo via '$DDS_ROOT/bin/DCPSInfoRepo'")("PubTopic", po::value(&Config::pubTopic)->default_value("pongTopic"), "Publish to Topic (Pong)")("SubTopic", po::value(&Config::subTopic)->default_value("pingTopic"), "Subscribe to Topic (Ping) ");
+  description.add_options()("help", "produce help message. Execution example - ./DDSEchoer --PubTopic pongTopic --SubTopic pngTopic ")("TransportConfig", po::value(&Config::transportConfig)->default_value("rtps_disc.ini"), "TransportConfig e.g. rtps_disc.ini, shmem.ini. Note that SHMEM requires running the DCPSInfoRepo via '$DDS_ROOT/bin/DCPSInfoRepo'")("PubTopic", po::value(&Config::pubTopic)->default_value("pongTopic"), "Publish to Topic (Pong)")("SubTopic", po::value(&Config::subTopic)->default_value("pingTopic"), "Subscribe to Topic (Ping) ");
   po::variables_map vm;
 
   try

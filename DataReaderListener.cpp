@@ -59,14 +59,18 @@ void DataReaderListenerImpl::on_liveliness_changed(
     DDS::DataReader_ptr,
     const DDS::LivelinessChangedStatus &)
 {
-  ACE_DEBUG((LM_DEBUG, ACE_TEXT("%N:%l: INFO: on_liveliness_changed()\n")));
+  //ACE_DEBUG((LM_DEBUG, ACE_TEXT("%N:%l: INFO: on_liveliness_changed()\n")));
 }
 
 void DataReaderListenerImpl::on_subscription_matched(
-    DDS::DataReader_ptr,
-    const DDS::SubscriptionMatchedStatus &)
+    DDS::DataReader_ptr reader,
+    const DDS::SubscriptionMatchedStatus &stat)
 {
-  ACE_DEBUG((LM_DEBUG, ACE_TEXT("%N:%l: INFO: on_subscription_matched()\n")));
+  //ACE_DEBUG((LM_DEBUG, ACE_TEXT("%N:%l: INFO: on_subscription_matched on topic ")));
+  if (stat.current_count_change > 0)
+  {
+    std::cout << "on_subscription_matched on topic " << reader->get_topicdescription()->get_name() << std::endl;
+  }
 }
 
 void DataReaderListenerImpl::on_sample_rejected(
@@ -85,8 +89,6 @@ void DataReaderListenerImpl::on_sample_lost(
 
 void DataReaderListenerImpl::on_data_available(DDS::DataReader_ptr reader)
 {
-  //++num_reads_;
-
   Messenger::MessageDataReader_var message_dr =
       Messenger::MessageDataReader::_narrow(reader);
 
@@ -104,22 +106,15 @@ void DataReaderListenerImpl::on_data_available(DDS::DataReader_ptr reader)
   {
     if (si.valid_data)
     {
-      // if (!counts_.insert(message.count).second)
-      // {
-      //   std::cout << "ERROR: Repeat ";
-      //   valid_ = false;
-      // }
-
-      // std::cout << "Message: subject    = " << message.subject.in() << std::endl
-      //           << "         subject_id = " << message.subject_id << std::endl
-      //           << "         from       = " << message.from.in() << std::endl
-      //           << "         count      = " << message.count << std::endl
-      //           << "         text       = " << message.text.in() << std::endl;
+      //std::cout << "message #" << message.count << std::endl;
+      if (strcmp(message.from, "Dummy") == 0)
+      {
+        //std::cout << "Dummy message #" << message.count << std::endl;
+        return; //skipping case dummy publisher for load purposes
+      }
 
       retcode = (*m_dataWriter)->write(message, DDS::HANDLE_NIL);
       //std::cout << "Pong #" << message.text << std::endl;
-      //sleep(1);
-
       if (retcode != DDS::RETCODE_OK)
       {
         ACE_ERROR((LM_ERROR,
@@ -129,21 +124,10 @@ void DataReaderListenerImpl::on_data_available(DDS::DataReader_ptr reader)
       }
     }
     // Non-Valid sample
-    // else if (si.instance_state == DDS::NOT_ALIVE_DISPOSED_INSTANCE_STATE)
-    // {
-    //   ACE_DEBUG((LM_DEBUG, ACE_TEXT("%N:%l: INFO: instance is disposed\n")));
-    // }
-    // else if (si.instance_state == DDS::NOT_ALIVE_NO_WRITERS_INSTANCE_STATE)
-    // {
-    //   ACE_DEBUG((LM_DEBUG, ACE_TEXT("%N:%l: INFO: instance is unregistered\n")));
-    // }
-    // else
-    // {
-    //   ACE_ERROR((LM_ERROR,
-    //              ACE_TEXT("%N:%l: on_data_available()")
-    //                  ACE_TEXT(" ERROR: unknown instance state: %d\n"),
-    //              si.instance_state));
-    // }
+    else
+    {
+      //ACE_DEBUG((LM_DEBUG, ACE_TEXT("%N:%l: INFO: instance is disposed\n")));
+    }
   }
   else
   {
