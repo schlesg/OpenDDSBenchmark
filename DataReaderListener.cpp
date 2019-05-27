@@ -110,7 +110,7 @@ void DataReaderListenerImpl::on_data_available(DDS::DataReader_ptr reader)
       if (strcmp(message.from, "Dummy") == 0)
       {
         //std::cout << "Dummy message #" << message.count << std::endl;
-        return; //skipping case dummy publisher for load purposes
+        return; //skipping echo case dummy publisher for load purposes
       }
 
       retcode = (*m_dataWriter)->write(message, DDS::HANDLE_NIL);

@@ -85,9 +85,6 @@ uint64_t Config::subCount;
 uint64_t Config::payloadSize;
 int64_t Config::roundtripCount;
 
-bool reliable = false;
-bool wait_for_acks = false;
-
 void append(DDS::PropertySeq &props, const char *name, const char *value)
 {
   const DDS::Property_t prop = {name, value, false /*propagate*/};
@@ -101,7 +98,16 @@ int main(int argc, char *argv[])
 #pragma region Init
   DDS::ReturnCode_t retcode;
   po::options_description description("Options");
-  description.add_options()("help", "produce help message. Execution example - ./DDSInitiator --PubTopic pingTopic --SubTopic pongTopic -msgLength 1000")("TransportConfig", po::value(&Config::transportConfig)->default_value("rtps_disc.ini"), "TransportConfig e.g. rtps_disc.ini, shmem.ini Note that SHMEM requires running the DCPSInfoRepo via '$DDS_ROOT/bin/DCPSInfoRepo'")("PubTopic", po::value(&Config::pubTopic)->default_value("pingTopic"), "Publish to Topic (Ping)")("SubTopic", po::value(&Config::subTopic)->default_value("pongTopic"), "Subscribe to Topic (Pong) ")("msgLength", po::value(&Config::payloadSize)->default_value(100), "Message Length (bytes)")("roundtripCount", po::value(&Config::roundtripCount)->default_value(1000), "ping-pong intervals (0 == Infinite, only for general load purposes)")("subCount", po::value(&Config::subCount)->default_value(1), "number of subscribers to wait for a ping")("pubName", po::value(&Config::publisherUniqueName)->default_value("Initiator"), "publisher name. Name 'Dummy' will cause the echoer to not echo messages")("updateRate", po::value(&Config::updateRate)->default_value(0), "update rate (for general load purposes only)");
+  description.add_options()
+  ("help", "produce help message. Execution example - ./DDSInitiator --PubTopic pingTopic --SubTopic pongTopic -msgLength 1000")
+  ("TransportConfig", po::value(&Config::transportConfig)->default_value("rtps_disc.ini"), "TransportConfig e.g. rtps_disc.ini, shmem.ini Note that SHMEM requires running the DCPSInfoRepo via '$DDS_ROOT/bin/DCPSInfoRepo'")
+  ("PubTopic", po::value(&Config::pubTopic)->default_value("pingTopic"), "Publish to Topic (Ping)")
+  ("SubTopic", po::value(&Config::subTopic)->default_value("pongTopic"), "Subscribe to Topic (Pong) ")
+  ("msgLength", po::value(&Config::payloadSize)->default_value(100), "Message Length (bytes)")
+  ("roundtripCount", po::value(&Config::roundtripCount)->default_value(1000), "ping-pong intervals (0 == Infinite, only for general load purposes)")
+  ("subCount", po::value(&Config::subCount)->default_value(1), "number of subscribers to wait for a ping")
+  ("pubName", po::value(&Config::publisherUniqueName)->default_value("Initiator"), "publisher name. Name 'Dummy' will cause the echoer to not echo messages")
+  ("updateRate", po::value(&Config::updateRate)->default_value(0), "update rate (for general load purposes only)");
   po::variables_map vm;
 
   try
@@ -318,10 +324,10 @@ int main(int argc, char *argv[])
       DDS::SampleInfo si;
 #pragma endregion
 
-      sleep(1);
+      sleep(2); 
       cout << "Running scenario ..." << endl;
       boost::chrono::high_resolution_clock::time_point start = boost::chrono::high_resolution_clock::now();
-      for (int i = 0; i < Config::roundtripCount || Config::roundtripCount == 0; i++)
+      for (int i = 1; i != Config::roundtripCount; i++)
       {
         //std::cout << "Writing #" << message.count << std::endl;
         retcode = message_dw->write(message, handle);
