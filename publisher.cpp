@@ -22,11 +22,12 @@
 #include "dds/DCPS/StaticIncludes.h"
 #include <iostream>
 #include "string"
-//#include <chrono>
-
 #include <boost/format.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/chrono.hpp>
+#include <boost/program_options.hpp>
+#include <boost/format.hpp>
+#include <boost/algorithm/string.hpp>
 
 #ifdef ACE_AS_STATIC_LIBS
 #ifndef OPENDDS_SAFETY_PROFILE
@@ -41,7 +42,6 @@
 #include "MessengerTypeSupportImpl.h"
 
 //#include "Writer.h"
-#include "Args.h"
 
 #ifdef OPENDDS_SECURITY
 const char auth_ca_file[] = "file:../../security/certs/identity/identity_ca_cert.pem";
@@ -59,16 +59,31 @@ const char DDSSEC_PROP_PERM_GOV_DOC[] = "dds.sec.access.governance";
 const char DDSSEC_PROP_PERM_DOC[] = "dds.sec.access.permissions";
 #endif
 using namespace std;
-//using namespace std::chrono;
+
+namespace po = boost::program_options;
+
+class Config
+{
+public:
+  static std::string pubTopic;
+  static std::string subTopic;
+  static std::string publisherUniqueName;
+  static std::string transportConfig;
+  static uint64_t subCount;
+  static uint64_t payloadSize;
+  static int64_t roundtripCount;
+};
+
+std::string Config::pubTopic;
+std::string Config::subTopic;
+std::string Config::publisherUniqueName;
+std::string Config::transportConfig;
+uint64_t Config::subCount;
+uint64_t Config::payloadSize;
+int64_t Config::roundtripCount;
 
 bool reliable = false;
 bool wait_for_acks = false;
-
-bool dw_reliable()
-{
-  OpenDDS::DCPS::TransportConfig_rch gc = TheTransportRegistry->global_config();
-  return !(gc->instances_[0]->transport_type_ == "udp");
-}
 
 void append(DDS::PropertySeq &props, const char *name, const char *value)
 {
@@ -78,26 +93,44 @@ void append(DDS::PropertySeq &props, const char *name, const char *value)
   props[len] = prop;
 }
 
-int ACE_TMAIN(int argc, ACE_TCHAR *argv[])
+int main(int argc, char *argv[])
 {
+#pragma region Init
+  DDS::ReturnCode_t retcode;
+  po::options_description description("Options");
+  description.add_options()("help", "produce help message. Execution example - ./DDSInitiator --PubTopic pingTopic --SubTopic pongTopic -msgLength 1000")("TransportConfig", po::value(&Config::transportConfig)->default_value("rtps_disc.ini"), "TransportConfig e.g. rtps_disc.ini, shmem.ini Note that SHMEM requires running the DCPSInfoRepo via '$DDS_ROOT/bin/DCPSInfoRepo'")("PubTopic", po::value(&Config::pubTopic)->default_value("pingTopic"), "Publish to Topic (Ping)")("SubTopic", po::value(&Config::subTopic)->default_value("pongTopic"), "Subscribe to Topic (Pong) ")("msgLength", po::value(&Config::payloadSize)->default_value(100), "Message Length (bytes)")("roundtripCount", po::value(&Config::roundtripCount)->default_value(1000), "ping-pong intervals")("subCount", po::value(&Config::subCount)->default_value(1), "number of subscribers to wait for a ping");
+  po::variables_map vm;
+
+  try
+  {
+    po::store(po::parse_command_line(argc, argv, description), vm);
+    po::notify(vm);
+  }
+  catch (const po::error &e)
+  {
+    std::cerr << e.what() << "\n";
+    return EXIT_FAILURE;
+  }
+
+  if (vm.count("help"))
+  {
+    std::cout << description << "\n";
+    return EXIT_SUCCESS;
+  }
+
   DDS::DomainParticipantFactory_var dpf;
   DDS::DomainParticipant_var participant;
 
   try
   {
 
-    std::cout << "Starting publisher" << std::endl;
+    std::cout << "Starting Initiator" << std::endl;
     {
+      int argsNum = 3;
+      char *param_list[] = {(char *)".", (char *)"-DCPSConfigFile", (char *)Config::transportConfig.c_str()};
+
       // Initialize DomainParticipantFactory
-      dpf = TheParticipantFactoryWithArgs(argc, argv);
-
-      std::cout << "Starting publisher with " << argc << " args" << std::endl;
-      int error;
-      if ((error = parse_args(argc, argv)) != 0) //TBD
-      {
-        return error;
-      }
-
+      dpf = TheParticipantFactoryWithArgs(argsNum, param_list);
       DDS::DomainParticipantQos part_qos;
       dpf->get_default_participant_qos(part_qos);
 
@@ -126,7 +159,10 @@ int ACE_TMAIN(int argc, ACE_TCHAR *argv[])
                               ACE_TEXT(" ERROR: create_participant failed!\n")),
                          -1);
       }
+#pragma endregion
 
+#pragma region PubSide
+      //Creating publisher side (pong)
       // Register TypeSupport (Messenger::Message)
       Messenger::MessageTypeSupport_var mts =
           new Messenger::MessageTypeSupportImpl();
@@ -142,7 +178,7 @@ int ACE_TMAIN(int argc, ACE_TCHAR *argv[])
       // Create Topic
       CORBA::String_var type_name = mts->get_type_name();
       DDS::Topic_var topic =
-          participant->create_topic("Ping",
+          participant->create_topic(Config::pubTopic.c_str(),
                                     type_name.in(),
                                     TOPIC_QOS_DEFAULT,
                                     DDS::TopicListener::_nil(),
@@ -199,11 +235,25 @@ int ACE_TMAIN(int argc, ACE_TCHAR *argv[])
         ACE_OS::exit(-1);
       }
 
-      //Creating subscriber side (pong)
+      //Message initialization
+      Messenger::Message message;
+      message.subject_id = 99;
 
+      DDS::InstanceHandle_t handle = message_dw->register_instance(message);
+      DDS::ReturnCode_t status;
+      message.from = "Initiator";
+      message.subject = "";
+      std::string s(Config::payloadSize, '*');
+      message.text = s.c_str();
+      message.count = 0;
+
+#pragma endregion
+#pragma region SubSide
+
+      //Creating subscriber side (pong)
       // Create Topic
       DDS::Topic_var pongTopic =
-          participant->create_topic("Pong",
+          participant->create_topic(Config::subTopic.c_str(),
                                     type_name.in(),
                                     TOPIC_QOS_DEFAULT,
                                     DDS::TopicListener::_nil(),
@@ -232,9 +282,6 @@ int ACE_TMAIN(int argc, ACE_TCHAR *argv[])
       }
 
       // Create DataReader
-      //DataReaderListenerImpl *const listener_servant = new DataReaderListenerImpl;
-      //DDS::DataReaderListener_var listener(listener_servant);
-
       DDS::DataReaderQos dr_qos;
       sub->get_default_datareader_qos(dr_qos);
       dr_qos.reliability.kind = DDS::BEST_EFFORT_RELIABILITY_QOS;
@@ -266,82 +313,40 @@ int ACE_TMAIN(int argc, ACE_TCHAR *argv[])
 
       Messenger::Message receivedMessage;
       DDS::SampleInfo si;
-      cout << "sleeping for 3 sec before starting logic" << endl;
+#pragma endregion
+
       sleep(1);
-
-      //Main flow
-      Messenger::Message message;
-      message.subject_id = 99;
-
-      DDS::InstanceHandle_t handle = message_dw->register_instance(message);
-      DDS::ReturnCode_t status;
-      message.from = "Initiator";
-      message.subject = "";
-      std::string s(100, '*');
-      message.text = s.c_str();
-      message.count = 0;
-
-      const int num_messages = 1000; //TBD by Config
+      cout << "Running scenario ..." << endl;
       boost::chrono::high_resolution_clock::time_point start = boost::chrono::high_resolution_clock::now();
-      //boost::posix_time::ptime start = boost::posix_time::second_clock::local_time();
-
-      for (int i = 0; i < num_messages; i++)
+      for (int i = 0; i < Config::roundtripCount; i++)
       {
-        DDS::ReturnCode_t error;
-
         //std::cout << "Writing #" << message.count << std::endl;
-        error = message_dw->write(message, handle);
+        retcode = message_dw->write(message, handle);
 
-        if (error != DDS::RETCODE_OK)
+        if (retcode != DDS::RETCODE_OK)
         {
-          ACE_ERROR((LM_ERROR,
-                     ACE_TEXT("%N:%l: svc()")
-                         ACE_TEXT(" ERROR: write returned %d!\n"),
-                     error));
+          ACE_ERROR((LM_ERROR, ACE_TEXT("%N:%l: svc()") ACE_TEXT(" ERROR: write returned %d!\n"), retcode));
           return 1;
         }
-        int numSubscribers = 1; //TBD by config
-        for (size_t jj = 0; jj < numSubscribers; ++jj)
+        for (size_t jj = 0; jj < Config::subCount; ++jj)
         {
-          // Wait for echoed message from each subscriber
-
           do
           {
             status = message_dr->take_next_sample(receivedMessage, si);
           } while (status == DDS::RETCODE_NO_DATA);
-          //std::cout << receivedMessage.count << std::endl;
-          // if (message.size() != Config::payloadSize)
-          // {
-          //   std::cout << "Message of incorrect size received: " << msg.size()
-          //             << std::endl;
-          //   return -1;
-          // }
         }
         message.count++;
-
-        //sleep(1);
       }
 
       boost::chrono::high_resolution_clock::time_point end = boost::chrono::high_resolution_clock::now();
       boost::chrono::microseconds diff = boost::chrono::duration_cast<boost::chrono::microseconds>(end - start);
-      cout << "Average latency = " << diff.count() / num_messages << " microseconds with roundtrip count of " << num_messages << endl;
+      cout << "Average latency = " << diff.count() / Config::roundtripCount << " microseconds with roundtrip count of " << Config::roundtripCount << endl;
 
-      std::cout << "Writer finished " << std::endl;
-      //writer->end();
-      // let any missed multicast/rtps messages get re-delivered
-      std::cout << "Writer wait small time" << std::endl;
-      ACE_Time_Value small_time(0, 250000);
-      ACE_OS::sleep(small_time);
-
-      std::cerr << "deleting DW" << std::endl;
-      //delete writer;
+      std::cout << "Shutting down..." << std::endl;
     }
     // Clean-up!
-    std::cerr << "deleting contained entities" << std::endl;
     participant->delete_contained_entities();
-    std::cerr << "deleting participant" << std::endl;
     dpf->delete_participant(participant.in());
-    std::cerr << "shutdown" << std::endl;
     TheServiceParticipant->shutdown();
   }
   catch (const CORBA::Exception &e)

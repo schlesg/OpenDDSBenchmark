@@ -31,44 +31,45 @@ parse_args(int argc, ACE_TCHAR *argv[])
   OPENDDS_STRING transport_type;
   int c;
   bool thread_per_connection = false;
-  while ((c = get_opts()) != -1) {
-    switch (c) {
-    case 't':
+  // while ((c = get_opts()) != -1) {
+  //   switch (c) {
+  //   case 't':
 
-      if (ACE_OS::strcmp(get_opts.opt_arg(), ACE_TEXT("udp")) == 0) {
-        transport_type = "udp";
+  //     if (ACE_OS::strcmp(get_opts.opt_arg(), ACE_TEXT("udp")) == 0) {
+  //       transport_type = "udp";
 
-      } else if (ACE_OS::strcmp(get_opts.opt_arg(), ACE_TEXT("multicast")) == 0) {
-        transport_type = "multicast";
+  //     } else if (ACE_OS::strcmp(get_opts.opt_arg(), ACE_TEXT("multicast")) == 0) {
+  //       transport_type = "multicast";
 
-      } else if (ACE_OS::strcmp(get_opts.opt_arg(), ACE_TEXT("tcp")) == 0) {
-        transport_type = "tcp";
-      }
+  //     } else if (ACE_OS::strcmp(get_opts.opt_arg(), ACE_TEXT("tcp")) == 0) {
+  //       transport_type = "tcp";
+  //     }
 
-      break;
-    case 'p':
-      thread_per_connection = true;
-      break;
-    case 'r':
-      reliable = true;
-      break;
-    case 'w':
-      wait_for_acks = true;
-      break;
-    case '?':
-    default:
-      ACE_ERROR_RETURN((LM_ERROR,
-                        ACE_TEXT("usage: %s [-t transport]\n"), argv[0]),
-                       -1);
-    }
-  }
+  //     break;
+  //   case 'p':
+  //     thread_per_connection = true;
+  //     break;
+  //   case 'r':
+  //     reliable = true;
+  //     break;
+  //   case 'w':
+  //     wait_for_acks = true;
+  //     break;
+  //   case '?':
+  //   default:
+  //     ACE_ERROR_RETURN((LM_ERROR,
+  //                       ACE_TEXT("usage: %s [-t transport]\n"), argv[0]),
+  //                      -1);
+  //   }
+  // }
 
-  if (!transport_type.empty()) {
-    OpenDDS::DCPS::TransportRegistry* reg = TheTransportRegistry;
-    OpenDDS::DCPS::TransportConfig_rch cfg = reg->create_config("myconfig");
-    cfg->instances_.push_back(reg->create_inst("myinst", transport_type));
-    reg->global_config(cfg);
-  }
+  // if (!transport_type.empty()) {
+  //   std::cout<<"ABC"<<std::endl;
+  //   OpenDDS::DCPS::TransportRegistry* reg = TheTransportRegistry;
+  //   OpenDDS::DCPS::TransportConfig_rch cfg = reg->create_config("myconfig");
+  //   cfg->instances_.push_back(reg->create_inst("myinst", transport_type));
+  //   reg->global_config(cfg);
+  // }
 
   if (thread_per_connection) {
     OpenDDS::DCPS::TransportConfig_rch config =

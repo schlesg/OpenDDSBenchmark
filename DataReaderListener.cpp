@@ -22,7 +22,7 @@ DataReaderListenerImpl::DataReaderListenerImpl(Messenger::MessageDataWriter_var 
     : num_reads_(0), valid_(true), reliable_(is_reliable())
 {
   m_dataWriter = dataWriter;
-  std::cout << "Transport is " << (reliable_ ? "" : "UN-") << "RELIABLE" << std::endl;
+  //std::cout << "Transport is " << (reliable_ ? "" : "UN-") << "RELIABLE" << std::endl;
 }
 
 DataReaderListenerImpl::DataReaderListenerImpl()
@@ -102,9 +102,6 @@ void DataReaderListenerImpl::on_data_available(DDS::DataReader_ptr reader)
 
   if (retcode == DDS::RETCODE_OK)
   {
-    // std::cout << "SampleInfo.sample_rank = " << si.sample_rank << std::endl;
-    // std::cout << "SampleInfo.instance_state = " << si.instance_state << std::endl;
-
     if (si.valid_data)
     {
       // if (!counts_.insert(message.count).second)
@@ -119,8 +116,8 @@ void DataReaderListenerImpl::on_data_available(DDS::DataReader_ptr reader)
       //           << "         count      = " << message.count << std::endl
       //           << "         text       = " << message.text.in() << std::endl;
 
-      std::cout << "Pong #" << message.count << std::endl;
       retcode = (*m_dataWriter)->write(message, DDS::HANDLE_NIL);
+      //std::cout << "Pong #" << message.text << std::endl;
       //sleep(1);
 
       if (retcode != DDS::RETCODE_OK)
@@ -156,4 +153,3 @@ void DataReaderListenerImpl::on_data_available(DDS::DataReader_ptr reader)
                retcode));
   }
 }
-

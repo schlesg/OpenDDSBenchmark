@@ -30,7 +30,12 @@
 
 #include "DataReaderListener.h"
 #include "MessengerTypeSupportImpl.h"
-#include "Args.h"
+#include <boost/format.hpp>
+#include <boost/date_time/posix_time/posix_time.hpp>
+#include <boost/chrono.hpp>
+#include <boost/program_options.hpp>
+#include <boost/format.hpp>
+#include <boost/algorithm/string.hpp>
 
 #ifdef OPENDDS_SECURITY
 const char auth_ca_file[] = "file:../../security/certs/identity/identity_ca_cert.pem";
@@ -48,14 +53,20 @@ const char DDSSEC_PROP_PERM_GOV_DOC[] = "dds.sec.access.governance";
 const char DDSSEC_PROP_PERM_DOC[] = "dds.sec.access.permissions";
 #endif
 
-bool reliable = false;
-bool wait_for_acks = false;
+using namespace std;
+namespace po = boost::program_options;
 
-bool dw_reliable()
+class Config
 {
-  OpenDDS::DCPS::TransportConfig_rch gc = TheTransportRegistry->global_config();
-  return !(gc->instances_[0]->transport_type_ == "udp");
-}
+public:
+  static std::string pubTopic;
+  static std::string subTopic;
+  static std::string transportConfig;
+};
+
+std::string Config::pubTopic;
+std::string Config::subTopic;
+std::string Config::transportConfig;
 
 void append(DDS::PropertySeq &props, const char *name, const char *value)
 {
@@ -65,20 +76,41 @@ void append(DDS::PropertySeq &props, const char *name, const char *value)
   props[len] = prop;
 }
 
-int ACE_TMAIN(int argc, ACE_TCHAR *argv[])
+int main(int argc, ACE_TCHAR *argv[])
 {
-  int status = 0;
+#pragma region Init
+  DDS::ReturnCode_t retcode;
+  po::options_description description("Options");
+  description.add_options()("help", "produce help message. Execution example - ./DDSInitiator --PubTopic pingTopic --SubTopic pongTopic -msgLength 1000")("TransportConfig", po::value(&Config::transportConfig)->default_value("rtps_disc.ini"), "TransportConfig e.g. rtps_disc.ini, shmem.ini. Note that SHMEM requires running the DCPSInfoRepo via '$DDS_ROOT/bin/DCPSInfoRepo'")("PubTopic", po::value(&Config::pubTopic)->default_value("pongTopic"), "Publish to Topic (Pong)")("SubTopic", po::value(&Config::subTopic)->default_value("pingTopic"), "Subscribe to Topic (Ping) ");
+  po::variables_map vm;
+
   try
   {
+    po::store(po::parse_command_line(argc, argv, description), vm);
+    po::notify(vm);
+  }
+  catch (const po::error &e)
+  {
+    std::cerr << e.what() << "\n";
+    return EXIT_FAILURE;
+  }
+
+  if (vm.count("help"))
+  {
+    std::cout << description << "\n";
+    return EXIT_SUCCESS;
+  }
+
+  try
+  {
+    std::cout << "Starting Echoer" << std::endl;
+    // Declaring/Initializing three characters pointers
+    int argsNum = 3;
+    char *param_list[] = {(char *)".", (char *)"-DCPSConfigFile", (char *)Config::transportConfig.c_str()};
+
     // Initialize DomainParticipantFactory
     DDS::DomainParticipantFactory_var dpf =
-        TheParticipantFactoryWithArgs(argc, argv);
-
-    int error;
-    if ((error = parse_args(argc, argv)) != 0)
-    {
-      return error;
-    }
+        TheParticipantFactoryWithArgs(argsNum, param_list);
 
     DDS::DomainParticipantQos part_qos;
     dpf->get_default_participant_qos(part_qos);
@@ -122,12 +154,14 @@ int ACE_TMAIN(int argc, ACE_TCHAR *argv[])
                             ACE_TEXT(" ERROR: register_type() failed!\n")),
                        -1);
     }
+#pragma endregion
+#pragma pubSide Init
 
     //Create Publishing side (Pong)
     // Create Topic
     CORBA::String_var type_name = ts->get_type_name();
     DDS::Topic_var pongTopic =
-        participant->create_topic("Pong",
+        participant->create_topic(Config::pubTopic.c_str(),
                                   type_name.in(),
                                   TOPIC_QOS_DEFAULT,
                                   DDS::TopicListener::_nil(),
@@ -183,11 +217,12 @@ int ACE_TMAIN(int argc, ACE_TCHAR *argv[])
                      ACE_TEXT(" ERROR: _narrow failed!\n")));
       ACE_OS::exit(-1);
     }
-
-    //Create Subscribing side (ping)
+#pragma endregion
+#pragma subSide Init
+    // Create Subscribing side (ping)
     // Create Topic
     DDS::Topic_var topic =
-        participant->create_topic("Ping",
+        participant->create_topic(Config::subTopic.c_str(),
                                   type_name.in(),
                                   TOPIC_QOS_DEFAULT,
                                   DDS::TopicListener::_nil(),
@@ -247,15 +282,13 @@ int ACE_TMAIN(int argc, ACE_TCHAR *argv[])
                      ACE_TEXT(" ERROR: _narrow failed!\n")));
       ACE_OS::exit(-1);
     }
+#pragma endregion
 
+    cout << "Echoer initialized" << endl;
     while (true)
     {
       //sleep(1);
     }
-
-    //status = listener_servant->is_valid() ? 0 : -1;
-
-    //ws->detach_condition(condition);
 
     // Clean-up!
     participant->delete_contained_entities();
@@ -265,8 +298,7 @@ int ACE_TMAIN(int argc, ACE_TCHAR *argv[])
   catch (const CORBA::Exception &e)
   {
     e._tao_print_exception("Exception caught in main():");
-    status = -1;
   }
 
-  return status;
+  return 0;
 }
