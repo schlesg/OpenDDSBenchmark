@@ -23,7 +23,7 @@
  **/
 
 // TAO_IDL - Generated from
-// /home/gal/Desktop/OpenDDS/ACE_TAO/TAO/TAO_IDL/be/be_codegen.cpp:451
+// /opt/OpenDDS/ACE_TAO/TAO/TAO_IDL/be/be_codegen.cpp:451
 
 #ifndef _TAO_IDL_MESSENGERS_H_
 #define _TAO_IDL_MESSENGERS_H_
@@ -40,7 +40,7 @@
 // Skeleton file generation suppressed with command line option -SS
 
 // TAO_IDL - Generated from
-// /home/gal/Desktop/OpenDDS/ACE_TAO/TAO/TAO_IDL/be/be_visitor_arg_traits.cpp:66
+// /opt/OpenDDS/ACE_TAO/TAO/TAO_IDL/be/be_visitor_arg_traits.cpp:66
 
 TAO_BEGIN_VERSIONED_NAMESPACE_DECL
 
@@ -50,7 +50,7 @@ namespace TAO
 {
 
   // TAO_IDL - Generated from
-  // /home/gal/Desktop/OpenDDS/ACE_TAO/TAO/TAO_IDL/be/be_visitor_arg_traits.cpp:945
+  // /opt/OpenDDS/ACE_TAO/TAO/TAO_IDL/be/be_visitor_arg_traits.cpp:945
 
   template<>
   class SArg_Traits< ::Messenger::Message>

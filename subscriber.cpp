@@ -256,7 +256,7 @@ int main(int argc, ACE_TCHAR *argv[])
 
     DDS::DataReaderQos dr_qos;
     sub->get_default_datareader_qos(dr_qos);
-    dr_qos.reliability.kind = DDS::RELIABLE_RELIABILITY_QOS;
+  //dr_qos.reliability.kind = DDS::RELIABLE_RELIABILITY_QOS;
     dr_qos.history.depth = 10;
     DDS::DataReader_var reader =
         sub->create_datareader(topic.in(),

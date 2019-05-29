@@ -23,7 +23,7 @@
  **/
 
 // TAO_IDL - Generated from
-// /home/gal/Desktop/OpenDDS/ACE_TAO/TAO/TAO_IDL/be/be_codegen.cpp:149
+// /opt/OpenDDS/ACE_TAO/TAO/TAO_IDL/be/be_codegen.cpp:149
 
 #ifndef _TAO_IDL_MESSENGERTYPESUPPORTC_H_
 #define _TAO_IDL_MESSENGERTYPESUPPORTC_H_
@@ -73,24 +73,24 @@
 #endif
 
 // TAO_IDL - Generated from
-// /home/gal/Desktop/OpenDDS/ACE_TAO/TAO/TAO_IDL/be/be_visitor_module/module_ch.cpp:35
+// /opt/OpenDDS/ACE_TAO/TAO/TAO_IDL/be/be_visitor_module/module_ch.cpp:35
 
 namespace Messenger
 {
 
   // TAO_IDL - Generated from
-  // /home/gal/Desktop/OpenDDS/ACE_TAO/TAO/TAO_IDL/be/be_visitor_sequence/sequence_ch.cpp:99
+  // /opt/OpenDDS/ACE_TAO/TAO/TAO_IDL/be/be_visitor_sequence/sequence_ch.cpp:99
 
   typedef ::TAO::DCPS::ZeroCopyDataSeq< Messenger::Message, DCPS_ZERO_COPY_SEQ_DEFAULT_SIZE> MessageSeq;
   
 
   // TAO_IDL - Generated from
-  // /home/gal/Desktop/OpenDDS/ACE_TAO/TAO/TAO_IDL/be/be_visitor_typecode/typecode_decl.cpp:34
+  // /opt/OpenDDS/ACE_TAO/TAO/TAO_IDL/be/be_visitor_typecode/typecode_decl.cpp:34
 
   extern  ::CORBA::TypeCode_ptr const _tc_MessageSeq;
 
   // TAO_IDL - Generated from
-  // /home/gal/Desktop/OpenDDS/ACE_TAO/TAO/TAO_IDL/be/be_interface.cpp:748
+  // /opt/OpenDDS/ACE_TAO/TAO/TAO_IDL/be/be_interface.cpp:748
 
 #if !defined (_MESSENGER_MESSAGETYPESUPPORT__VAR_OUT_CH_)
 #define _MESSENGER_MESSAGETYPESUPPORT__VAR_OUT_CH_
@@ -104,7 +104,7 @@ namespace Messenger
 #endif /* end #if !defined */
 
   // TAO_IDL - Generated from
-  // /home/gal/Desktop/OpenDDS/ACE_TAO/TAO/TAO_IDL/be/be_visitor_interface/interface_ch.cpp:40
+  // /opt/OpenDDS/ACE_TAO/TAO/TAO_IDL/be/be_visitor_interface/interface_ch.cpp:40
 
   class  MessageTypeSupport
     : public virtual ::OpenDDS::DCPS::TypeSupport
@@ -113,7 +113,7 @@ namespace Messenger
   public:
 
     // TAO_IDL - Generated from
-    // /home/gal/Desktop/OpenDDS/ACE_TAO/TAO/TAO_IDL/be/be_type.cpp:304
+    // /opt/OpenDDS/ACE_TAO/TAO/TAO_IDL/be/be_type.cpp:304
 
     typedef MessageTypeSupport_ptr _ptr_type;
     typedef MessageTypeSupport_var _var_type;
@@ -131,7 +131,7 @@ namespace Messenger
     static MessageTypeSupport_ptr _nil (void);
 
     // TAO_IDL - Generated from
-    // /home/gal/Desktop/OpenDDS/ACE_TAO/TAO/TAO_IDL/be/be_visitor_interface/interface_ch.cpp:137
+    // /opt/OpenDDS/ACE_TAO/TAO/TAO_IDL/be/be_visitor_interface/interface_ch.cpp:137
 
     virtual ::CORBA::Boolean _is_a (const char *type_id);
     virtual const char* _interface_repository_id (void) const;
@@ -153,12 +153,12 @@ namespace Messenger
   };
 
   // TAO_IDL - Generated from
-  // /home/gal/Desktop/OpenDDS/ACE_TAO/TAO/TAO_IDL/be/be_visitor_typecode/typecode_decl.cpp:34
+  // /opt/OpenDDS/ACE_TAO/TAO/TAO_IDL/be/be_visitor_typecode/typecode_decl.cpp:34
 
   extern  ::CORBA::TypeCode_ptr const _tc_MessageTypeSupport;
 
   // TAO_IDL - Generated from
-  // /home/gal/Desktop/OpenDDS/ACE_TAO/TAO/TAO_IDL/be/be_interface.cpp:748
+  // /opt/OpenDDS/ACE_TAO/TAO/TAO_IDL/be/be_interface.cpp:748
 
 #if !defined (_MESSENGER_MESSAGEDATAWRITER__VAR_OUT_CH_)
 #define _MESSENGER_MESSAGEDATAWRITER__VAR_OUT_CH_
@@ -172,7 +172,7 @@ namespace Messenger
 #endif /* end #if !defined */
 
   // TAO_IDL - Generated from
-  // /home/gal/Desktop/OpenDDS/ACE_TAO/TAO/TAO_IDL/be/be_visitor_interface/interface_ch.cpp:40
+  // /opt/OpenDDS/ACE_TAO/TAO/TAO_IDL/be/be_visitor_interface/interface_ch.cpp:40
 
   class  MessageDataWriter
     : public virtual ::DDS::DataWriter
@@ -181,7 +181,7 @@ namespace Messenger
   public:
 
     // TAO_IDL - Generated from
-    // /home/gal/Desktop/OpenDDS/ACE_TAO/TAO/TAO_IDL/be/be_type.cpp:304
+    // /opt/OpenDDS/ACE_TAO/TAO/TAO_IDL/be/be_type.cpp:304
 
     typedef MessageDataWriter_ptr _ptr_type;
     typedef MessageDataWriter_var _var_type;
@@ -240,7 +240,7 @@ namespace Messenger
       const ::Messenger::Message & instance_data) = 0;
 
     // TAO_IDL - Generated from
-    // /home/gal/Desktop/OpenDDS/ACE_TAO/TAO/TAO_IDL/be/be_visitor_interface/interface_ch.cpp:137
+    // /opt/OpenDDS/ACE_TAO/TAO/TAO_IDL/be/be_visitor_interface/interface_ch.cpp:137
 
     virtual ::CORBA::Boolean _is_a (const char *type_id);
     virtual const char* _interface_repository_id (void) const;
@@ -262,12 +262,12 @@ namespace Messenger
   };
 
   // TAO_IDL - Generated from
-  // /home/gal/Desktop/OpenDDS/ACE_TAO/TAO/TAO_IDL/be/be_visitor_typecode/typecode_decl.cpp:34
+  // /opt/OpenDDS/ACE_TAO/TAO/TAO_IDL/be/be_visitor_typecode/typecode_decl.cpp:34
 
   extern  ::CORBA::TypeCode_ptr const _tc_MessageDataWriter;
 
   // TAO_IDL - Generated from
-  // /home/gal/Desktop/OpenDDS/ACE_TAO/TAO/TAO_IDL/be/be_interface.cpp:748
+  // /opt/OpenDDS/ACE_TAO/TAO/TAO_IDL/be/be_interface.cpp:748
 
 #if !defined (_MESSENGER_MESSAGEDATAREADER__VAR_OUT_CH_)
 #define _MESSENGER_MESSAGEDATAREADER__VAR_OUT_CH_
@@ -281,7 +281,7 @@ namespace Messenger
 #endif /* end #if !defined */
 
   // TAO_IDL - Generated from
-  // /home/gal/Desktop/OpenDDS/ACE_TAO/TAO/TAO_IDL/be/be_visitor_interface/interface_ch.cpp:40
+  // /opt/OpenDDS/ACE_TAO/TAO/TAO_IDL/be/be_visitor_interface/interface_ch.cpp:40
 
   class  MessageDataReader
     : public virtual ::OpenDDS::DCPS::DataReaderEx
@@ -290,7 +290,7 @@ namespace Messenger
   public:
 
     // TAO_IDL - Generated from
-    // /home/gal/Desktop/OpenDDS/ACE_TAO/TAO/TAO_IDL/be/be_type.cpp:304
+    // /opt/OpenDDS/ACE_TAO/TAO/TAO_IDL/be/be_type.cpp:304
 
     typedef MessageDataReader_ptr _ptr_type;
     typedef MessageDataReader_var _var_type;
@@ -419,7 +419,7 @@ namespace Messenger
       const ::Messenger::Message & instance_data) = 0;
 
     // TAO_IDL - Generated from
-    // /home/gal/Desktop/OpenDDS/ACE_TAO/TAO/TAO_IDL/be/be_visitor_interface/interface_ch.cpp:137
+    // /opt/OpenDDS/ACE_TAO/TAO/TAO_IDL/be/be_visitor_interface/interface_ch.cpp:137
 
     virtual ::CORBA::Boolean _is_a (const char *type_id);
     virtual const char* _interface_repository_id (void) const;
@@ -441,17 +441,17 @@ namespace Messenger
   };
 
   // TAO_IDL - Generated from
-  // /home/gal/Desktop/OpenDDS/ACE_TAO/TAO/TAO_IDL/be/be_visitor_typecode/typecode_decl.cpp:34
+  // /opt/OpenDDS/ACE_TAO/TAO/TAO_IDL/be/be_visitor_typecode/typecode_decl.cpp:34
 
   extern  ::CORBA::TypeCode_ptr const _tc_MessageDataReader;
 
 // TAO_IDL - Generated from
-// /home/gal/Desktop/OpenDDS/ACE_TAO/TAO/TAO_IDL/be/be_visitor_module/module_ch.cpp:64
+// /opt/OpenDDS/ACE_TAO/TAO/TAO_IDL/be/be_visitor_module/module_ch.cpp:64
 
 } // module Messenger
 
 // TAO_IDL - Generated from
-// /home/gal/Desktop/OpenDDS/ACE_TAO/TAO/TAO_IDL/be/be_visitor_arg_traits.cpp:66
+// /opt/OpenDDS/ACE_TAO/TAO/TAO_IDL/be/be_visitor_arg_traits.cpp:66
 
 TAO_BEGIN_VERSIONED_NAMESPACE_DECL
 
@@ -466,7 +466,7 @@ TAO_END_VERSIONED_NAMESPACE_DECL
 
 
 // TAO_IDL - Generated from
-// /home/gal/Desktop/OpenDDS/ACE_TAO/TAO/TAO_IDL/be/be_visitor_traits.cpp:60
+// /opt/OpenDDS/ACE_TAO/TAO/TAO_IDL/be/be_visitor_traits.cpp:60
 
 TAO_BEGIN_VERSIONED_NAMESPACE_DECL
 
@@ -533,7 +533,7 @@ TAO_END_VERSIONED_NAMESPACE_DECL
 
 
 // TAO_IDL - Generated from
-// /home/gal/Desktop/OpenDDS/ACE_TAO/TAO/TAO_IDL/be/be_visitor_interface/any_op_ch.cpp:41
+// /opt/OpenDDS/ACE_TAO/TAO/TAO_IDL/be/be_visitor_interface/any_op_ch.cpp:41
 
 
 
@@ -561,7 +561,7 @@ TAO_END_VERSIONED_NAMESPACE_DECL
 #endif
 
 // TAO_IDL - Generated from
-// /home/gal/Desktop/OpenDDS/ACE_TAO/TAO/TAO_IDL/be/be_visitor_interface/any_op_ch.cpp:41
+// /opt/OpenDDS/ACE_TAO/TAO/TAO_IDL/be/be_visitor_interface/any_op_ch.cpp:41
 
 
 
@@ -589,7 +589,7 @@ TAO_END_VERSIONED_NAMESPACE_DECL
 #endif
 
 // TAO_IDL - Generated from
-// /home/gal/Desktop/OpenDDS/ACE_TAO/TAO/TAO_IDL/be/be_visitor_interface/any_op_ch.cpp:41
+// /opt/OpenDDS/ACE_TAO/TAO/TAO_IDL/be/be_visitor_interface/any_op_ch.cpp:41
 
 
 
@@ -617,7 +617,7 @@ TAO_END_VERSIONED_NAMESPACE_DECL
 #endif
 
 // TAO_IDL - Generated from
-// /home/gal/Desktop/OpenDDS/ACE_TAO/TAO/TAO_IDL/be/be_codegen.cpp:1686
+// /opt/OpenDDS/ACE_TAO/TAO/TAO_IDL/be/be_codegen.cpp:1686
 #if defined (__ACE_INLINE__)
 #include "MessengerTypeSupportC.inl"
 #endif /* defined INLINE */

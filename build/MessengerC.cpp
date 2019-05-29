@@ -23,7 +23,7 @@
  **/
 
 // TAO_IDL - Generated from
-// /home/gal/Desktop/OpenDDS/ACE_TAO/TAO/TAO_IDL/be/be_codegen.cpp:366
+// /opt/OpenDDS/ACE_TAO/TAO/TAO_IDL/be/be_codegen.cpp:366
 
 
 #include "MessengerC.h"
@@ -42,7 +42,7 @@
 #endif /* !defined INLINE */
 
 // TAO_IDL - Generated from
-// /home/gal/Desktop/OpenDDS/ACE_TAO/TAO/TAO_IDL/be/be_visitor_typecode/struct_typecode.cpp:86
+// /opt/OpenDDS/ACE_TAO/TAO/TAO_IDL/be/be_visitor_typecode/struct_typecode.cpp:86
 
 static TAO::TypeCode::Struct_Field<
   char const *,
@@ -78,7 +78,7 @@ namespace Messenger
 }
 
 // TAO_IDL - Generated from
-// /home/gal/Desktop/OpenDDS/ACE_TAO/TAO/TAO_IDL/be/be_visitor_structure/structure_cs.cpp:56
+// /opt/OpenDDS/ACE_TAO/TAO/TAO_IDL/be/be_visitor_structure/structure_cs.cpp:56
 
 void
 Messenger::Message::_tao_any_destructor (
@@ -90,7 +90,7 @@ Messenger::Message::_tao_any_destructor (
 }
 
 // TAO_IDL - Generated from
-// /home/gal/Desktop/OpenDDS/ACE_TAO/TAO/TAO_IDL/be/be_visitor_structure/any_op_cs.cpp:43
+// /opt/OpenDDS/ACE_TAO/TAO/TAO_IDL/be/be_visitor_structure/any_op_cs.cpp:43
 
 
 
@@ -181,7 +181,7 @@ TAO_END_VERSIONED_NAMESPACE_DECL
 #endif
 
 // TAO_IDL - Generated from
-// /home/gal/Desktop/OpenDDS/ACE_TAO/TAO/TAO_IDL/be/be_visitor_structure/cdr_op_cs.cpp:49
+// /opt/OpenDDS/ACE_TAO/TAO/TAO_IDL/be/be_visitor_structure/cdr_op_cs.cpp:49
 
 TAO_BEGIN_VERSIONED_NAMESPACE_DECL
 

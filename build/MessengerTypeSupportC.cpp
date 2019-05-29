@@ -23,7 +23,7 @@
  **/
 
 // TAO_IDL - Generated from
-// /home/gal/Desktop/OpenDDS/ACE_TAO/TAO/TAO_IDL/be/be_codegen.cpp:366
+// /opt/OpenDDS/ACE_TAO/TAO/TAO_IDL/be/be_codegen.cpp:366
 
 
 #include "MessengerTypeSupportC.h"
@@ -44,12 +44,12 @@
 #endif /* !defined INLINE */
 
 // TAO_IDL - Generated from
-// /home/gal/Desktop/OpenDDS/ACE_TAO/TAO/TAO_IDL/be/be_visitor_typecode/alias_typecode.cpp:49
+// /opt/OpenDDS/ACE_TAO/TAO/TAO_IDL/be/be_visitor_typecode/alias_typecode.cpp:49
 
 
 
 // TAO_IDL - Generated from
-// /home/gal/Desktop/OpenDDS/ACE_TAO/TAO/TAO_IDL/be/be_visitor_typecode/typecode_defn.cpp:461
+// /opt/OpenDDS/ACE_TAO/TAO/TAO_IDL/be/be_visitor_typecode/typecode_defn.cpp:461
 
 
 #ifndef _TAO_TYPECODE_Messenger_MessageSeq_GUARD
@@ -97,7 +97,7 @@ namespace Messenger
 }
 
 // TAO_IDL - Generated from
-// /home/gal/Desktop/OpenDDS/ACE_TAO/TAO/TAO_IDL/be/be_visitor_interface/interface_cs.cpp:48
+// /opt/OpenDDS/ACE_TAO/TAO/TAO_IDL/be/be_visitor_interface/interface_cs.cpp:48
 TAO_BEGIN_VERSIONED_NAMESPACE_DECL
 
 // Traits specializations for Messenger::MessageTypeSupport.
@@ -233,7 +233,7 @@ Messenger::MessageTypeSupport::marshal (TAO_OutputCDR & /* cdr */)
 }
 
 // TAO_IDL - Generated from
-// /home/gal/Desktop/OpenDDS/ACE_TAO/TAO/TAO_IDL/be/be_visitor_typecode/objref_typecode.cpp:70
+// /opt/OpenDDS/ACE_TAO/TAO/TAO_IDL/be/be_visitor_typecode/objref_typecode.cpp:70
 
 static TAO::TypeCode::Objref<char const *,
                              TAO::Null_RefCount_Policy>
@@ -250,7 +250,7 @@ namespace Messenger
 }
 
 // TAO_IDL - Generated from
-// /home/gal/Desktop/OpenDDS/ACE_TAO/TAO/TAO_IDL/be/be_visitor_interface/interface_cs.cpp:48
+// /opt/OpenDDS/ACE_TAO/TAO/TAO_IDL/be/be_visitor_interface/interface_cs.cpp:48
 TAO_BEGIN_VERSIONED_NAMESPACE_DECL
 
 // Traits specializations for Messenger::MessageDataWriter.
@@ -386,7 +386,7 @@ Messenger::MessageDataWriter::marshal (TAO_OutputCDR & /* cdr */)
 }
 
 // TAO_IDL - Generated from
-// /home/gal/Desktop/OpenDDS/ACE_TAO/TAO/TAO_IDL/be/be_visitor_typecode/objref_typecode.cpp:70
+// /opt/OpenDDS/ACE_TAO/TAO/TAO_IDL/be/be_visitor_typecode/objref_typecode.cpp:70
 
 static TAO::TypeCode::Objref<char const *,
                              TAO::Null_RefCount_Policy>
@@ -403,7 +403,7 @@ namespace Messenger
 }
 
 // TAO_IDL - Generated from
-// /home/gal/Desktop/OpenDDS/ACE_TAO/TAO/TAO_IDL/be/be_visitor_interface/interface_cs.cpp:48
+// /opt/OpenDDS/ACE_TAO/TAO/TAO_IDL/be/be_visitor_interface/interface_cs.cpp:48
 TAO_BEGIN_VERSIONED_NAMESPACE_DECL
 
 // Traits specializations for Messenger::MessageDataReader.
@@ -543,7 +543,7 @@ Messenger::MessageDataReader::marshal (TAO_OutputCDR & /* cdr */)
 }
 
 // TAO_IDL - Generated from
-// /home/gal/Desktop/OpenDDS/ACE_TAO/TAO/TAO_IDL/be/be_visitor_typecode/objref_typecode.cpp:70
+// /opt/OpenDDS/ACE_TAO/TAO/TAO_IDL/be/be_visitor_typecode/objref_typecode.cpp:70
 
 static TAO::TypeCode::Objref<char const *,
                              TAO::Null_RefCount_Policy>
@@ -560,7 +560,7 @@ namespace Messenger
 }
 
 // TAO_IDL - Generated from
-// /home/gal/Desktop/OpenDDS/ACE_TAO/TAO/TAO_IDL/be/be_visitor_interface/any_op_cs.cpp:38
+// /opt/OpenDDS/ACE_TAO/TAO/TAO_IDL/be/be_visitor_interface/any_op_cs.cpp:38
 TAO_BEGIN_VERSIONED_NAMESPACE_DECL
 
 
@@ -691,7 +691,7 @@ TAO_END_VERSIONED_NAMESPACE_DECL
 #endif
 
 // TAO_IDL - Generated from
-// /home/gal/Desktop/OpenDDS/ACE_TAO/TAO/TAO_IDL/be/be_visitor_interface/any_op_cs.cpp:38
+// /opt/OpenDDS/ACE_TAO/TAO/TAO_IDL/be/be_visitor_interface/any_op_cs.cpp:38
 TAO_BEGIN_VERSIONED_NAMESPACE_DECL
 
 
@@ -822,7 +822,7 @@ TAO_END_VERSIONED_NAMESPACE_DECL
 #endif
 
 // TAO_IDL - Generated from
-// /home/gal/Desktop/OpenDDS/ACE_TAO/TAO/TAO_IDL/be/be_visitor_interface/any_op_cs.cpp:38
+// /opt/OpenDDS/ACE_TAO/TAO/TAO_IDL/be/be_visitor_interface/any_op_cs.cpp:38
 TAO_BEGIN_VERSIONED_NAMESPACE_DECL
 
 
