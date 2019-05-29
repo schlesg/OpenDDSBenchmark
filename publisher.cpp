@@ -217,7 +217,8 @@ int main(int argc, char *argv[])
 
       DDS::DataWriterQos qos;
       pub->get_default_datawriter_qos(qos);
-      qos.reliability.kind = DDS::BEST_EFFORT_RELIABILITY_QOS;
+      qos.reliability.kind = DDS::RELIABLE_RELIABILITY_QOS;
+      qos.history.depth = 10;
 
       // Create DataWriter
       DDS::DataWriter_var dw =
@@ -293,7 +294,8 @@ int main(int argc, char *argv[])
       // Create DataReader
       DDS::DataReaderQos dr_qos;
       sub->get_default_datareader_qos(dr_qos);
-      dr_qos.reliability.kind = DDS::BEST_EFFORT_RELIABILITY_QOS;
+      dr_qos.reliability.kind = DDS::RELIABLE_RELIABILITY_QOS;
+      dr_qos.history.depth = 10;
 
       DDS::DataReader_var reader =
           sub->create_datareader(pongTopic.in(),
@@ -345,12 +347,16 @@ int main(int argc, char *argv[])
 
         else
         {
-          for (size_t jj = 0; jj < Config::subCount; ++jj)
+          for (size_t jj = 0; jj < Config::subCount; )
           {
-            do
-            {
-              status = message_dr->take_next_sample(receivedMessage, si);
-            } while (status == DDS::RETCODE_NO_DATA);
+            status = message_dr->take_next_sample(receivedMessage, si);
+            if (status != DDS::RETCODE_NO_DATA){
+               jj++;
+              //cout<<"Received #" << jj <<endl;
+            }
+            else{
+              //cout<<"Not received"<<endl;
+            } 
           }
         }
 

@@ -191,8 +191,8 @@ int main(int argc, ACE_TCHAR *argv[])
 
     DDS::DataWriterQos qos;
     pub->get_default_datawriter_qos(qos);
-    qos.reliability.kind = DDS::BEST_EFFORT_RELIABILITY_QOS;
-
+    qos.reliability.kind = DDS::RELIABLE_RELIABILITY_QOS;
+    qos.history.depth = 10;
     // Create DataWriter
     DDS::DataWriter_var dw =
         pub->create_datawriter(pongTopic.in(),
@@ -256,7 +256,8 @@ int main(int argc, ACE_TCHAR *argv[])
 
     DDS::DataReaderQos dr_qos;
     sub->get_default_datareader_qos(dr_qos);
-    dr_qos.reliability.kind = DDS::BEST_EFFORT_RELIABILITY_QOS;
+    dr_qos.reliability.kind = DDS::RELIABLE_RELIABILITY_QOS;
+      dr_qos.history.depth = 10;
 
     DDS::DataReader_var reader =
         sub->create_datareader(topic.in(),
