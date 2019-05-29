@@ -365,7 +365,7 @@ int main(int argc, char *argv[])
 
       boost::chrono::high_resolution_clock::time_point end = boost::chrono::high_resolution_clock::now();
       boost::chrono::microseconds diff = boost::chrono::duration_cast<boost::chrono::microseconds>(end - start);
-      cout << "Average latency = " << diff.count() / Config::roundtripCount << " microseconds with roundtrip count of " << Config::roundtripCount << endl;
+      cout << "One way average latency = " << diff.count() / Config::roundtripCount / 2 << " microseconds with roundtrip count of " << Config::roundtripCount << endl;
 
       std::cout << "Shutting down..." << std::endl;
     }
