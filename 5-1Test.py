@@ -5,12 +5,14 @@ import os
 # os.chdir("build/")
 commandList = []
 commandList.append("./echoer --Trans shmem.ini")
-commandList.append("./initiator --Trans shmem.ini --msgLength 10000")
-commandList.append("./initiator --Trans shmem.ini --pubName Dummy --msgLength 10000")
-commandList.append("./initiator --Trans shmem.ini --pubName Dummy --msgLength 10000")
-commandList.append("./initiator --Trans shmem.ini --pubName Dummy --msgLength 10000")
-commandList.append("./initiator --Trans shmem.ini --pubName Dummy --msgLength 10000")
 
+msgLen = '10000'
+
+commandList.append("./initiator --Trans shmem.ini --msgLength " + msgLen)
+commandList.append("./initiator --Trans shmem.ini --pubName Dummy --msgLength " + msgLen)
+commandList.append("./initiator --Trans shmem.ini --pubName Dummy --msgLength " + msgLen)
+commandList.append("./initiator --Trans shmem.ini --pubName Dummy --msgLength " + msgLen)
+commandList.append("./initiator --Trans shmem.ini --pubName Dummy --msgLength " + msgLen)
 # commandList.append("./initiator --SubTopic C5 --PubTopic MS1 --msgLength 5000 --roundtripCount 1000") #C5
 
 for command in commandList:
