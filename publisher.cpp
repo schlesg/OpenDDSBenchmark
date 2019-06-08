@@ -326,7 +326,7 @@ int main(int argc, char *argv[])
       DDS::SampleInfo si;
 #pragma endregion
 
-      sleep(2); 
+      sleep(5); 
       cout << "Running scenario ..." << endl;
       boost::chrono::high_resolution_clock::time_point start = boost::chrono::high_resolution_clock::now();
       for (int i = 1; i != Config::roundtripCount; i++)

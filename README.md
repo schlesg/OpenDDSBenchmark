@@ -22,7 +22,7 @@ make
 ## Running the tests
 
 python3 runFullScaleTest.py 
-
+In case MC is not supported - you will need to add SpdpSendAddrs=192.168.1.105:8410 to the rtps_disc.ini
 
 ## License
 
