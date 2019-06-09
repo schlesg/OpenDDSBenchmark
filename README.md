@@ -8,21 +8,46 @@ These instructions will get you a copy of the project up and running on your loc
 
 ### Prerequisites
 
-OpenDDS
-Boost 1.69
-Python3
+#### OpenDDS 
+git clone https://github.com/objectcomputing/OpenDDS.git  
+./configure --ace=download --ace-github-latest  
+. ./setenv.sh  
+make  
+bin/all_tests.pl (optional)  
+
+#### Boost  
+   wget -O boost_1_69_0.tar.gz https://sourceforge.net/projects/boost/files/boost/1.69.0/boost_1_69_0.tar.gz/download  
+   tar xzvf boost_1_69_0.tar.gz  
+   cd boost_1_69_0  
+   ./bootstrap.sh  
+   ./b2  
+   
+#### Python3  
+apt install python3
+
+#### Cmake  
+sudo apt purge cmake (remove current cmake version)  
+download latest cmake (at least 3.8) from https://cmake.org/download/.  
+./configure
+make
+make install
+
 
 ### Installing
-
-mkdir build
-cd build
-cmake ..
-make
+. $DDS_ROOT/setenv.sh  
+mkdir build  
+cd build  
+cmake ..  
+make  
 
 ## Running the tests
+. $DDS_ROOT/setenv.sh  
+* Can run the Initiator and Echoer apps directly:
+  - ./initiator --msgLength 1000  
+* More complex test are defined within the py files (e.g. IPC-1-5Test.py).
 
-python3 runFullScaleTest.py 
-In case MC is not supported - you will need to add SpdpSendAddrs=192.168.1.105:8410 to the rtps_disc.ini
+In case MC is not supported - you will need to add SpdpSendAddrs={RemoteHostIP}:{RemoteHostPort} to the rtps_disc.ini
+In case running SHMEM configuration, you will need to tun the DCPSInfoRepo first - $DDS_ROOT/bin/DCPSInfoRepo
 
 ## License
 
