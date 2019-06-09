@@ -326,7 +326,7 @@ int main(int argc, char *argv[])
       DDS::SampleInfo si;
 #pragma endregion
 
-      sleep(5); 
+      sleep(5); //Waiting for discovery to finish (TBU)
       cout << "Running scenario ..." << endl;
       boost::chrono::high_resolution_clock::time_point start = boost::chrono::high_resolution_clock::now();
       for (int i = 1; i != Config::roundtripCount; i++)
@@ -369,7 +369,7 @@ int main(int argc, char *argv[])
 
       std::cout << "Shutting down..." << std::endl;
     }
-    // Clean-up!
+    // Clean-up
     participant->delete_contained_entities();
     dpf->delete_participant(participant.in());
     TheServiceParticipant->shutdown();
