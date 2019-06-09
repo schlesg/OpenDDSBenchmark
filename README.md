@@ -35,9 +35,10 @@ make install
 
 ### Installing
 . $DDS_ROOT/setenv.sh  
+git clone https://github.com/schlesg/OpenDDSBenchmark.git  
 mkdir build  
 cd build  
-cmake ..  
+cmake -DBOOST_ROOT={BoostRootDir/} ..  
 make  
 
 ## Running the tests
