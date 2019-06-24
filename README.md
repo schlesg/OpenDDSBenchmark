@@ -28,9 +28,9 @@ apt install python3
 #### Cmake  
 sudo apt purge cmake (remove current cmake version)  
 download latest cmake (at least 3.8) from https://cmake.org/download/.  
-./configure
-make
-make install
+./configure  
+make  
+make install  
 
 
 ### Installing
