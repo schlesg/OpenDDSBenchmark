@@ -10,7 +10,7 @@ These instructions will get you a copy of the project up and running on your loc
 
 #### OpenDDS 
 git clone https://github.com/objectcomputing/OpenDDS.git  
-./configure --ace=download --ace-github-latest  
+./configure --ace=download --ace-github-latest --no-tests (optional)
 . ./setenv.sh  
 make  
 bin/all_tests.pl (optional)  
